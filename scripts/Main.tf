@@ -246,3 +246,22 @@ resource "aws_security_group" "secondary_sg" {
   }
 }
 
+resource "aws_instance" "primary_instance" {
+  provider               = aws.primary
+  ami                    = data.aws_ami.primary_ami.id
+  instance_type          = var.instance_type
+  subnet_id              = aws_subnet.primary_subnet.id
+  vpc_security_group_ids = [aws_security_group.primary_sg.id]
+  key_name               = var.primary_key_name
+
+  user_data = local.primary_user_data
+
+  tags = {
+    Name        = "Primary-VPC-Instance"
+    Environment = "Demo"
+    Region      = var.primary_region
+  }
+
+  depends_on = [aws_vpc_peering_connection_accepter.secondary_accepter]
+}
+
