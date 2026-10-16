@@ -113,3 +113,17 @@ resource "aws_route_table_association" "secondary_rta" {
   subnet_id      = aws_subnet.secondary_subnet.id
   route_table_id = aws_route_table.secondary_rt.id
 }
+
+resource "aws_vpc_peering_connection" "primary_to_secondary" {
+  provider    = aws.primary
+  vpc_id      = aws_vpc.primary_vpc.id
+  peer_vpc_id = aws_vpc.secondary_vpc.id
+  peer_region = var.secondary_region
+  auto_accept = false
+
+  tags = {
+    Name        = "Primary-to-Secondary-Peering"
+    Environment = "Demo"
+    Side        = "Requester"
+  }
+}
